@@ -1,0 +1,53 @@
+spring:
+  mail:
+    default-encoding: UTF-8
+    host: smtp.qq.com
+    username: 958437974@qq.com
+    password: bogqwfpgwqtobahi
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+    #邮件发送配置
+  data:
+   mongodb:
+     uri: mongodb://localhost:27017/1809a
+  datasource:
+    name: mydb
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://127.0.0.1:3306/test
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+  application:
+    name: servername
+  dubbo:
+    application:
+      name: springboot_consumer
+    registry:
+      address: zookeeper://127.0.0.1:2181
+    scan: com.jk.service
+    thymeleaf:
+      encoding: UTF-8
+      mode: LEGACYHTML5
+      servlet:
+        content-type: text/html
+redis:
+  database: 0
+  host: 127.0.0.1
+  port: 6379
+  password:
+  timeout: 5000
+  pool:
+  max-active: 20
+  max-wait: -1
+  max-idle: 8
+  min-idle: 0
+
+mybatis:
+  mapperLocations: classpath*:mybatis/mapper-*.xml
+server:
+  port: 8081

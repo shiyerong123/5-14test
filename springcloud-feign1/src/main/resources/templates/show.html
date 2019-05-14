@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/jquery-3.2.1.js"></script>
+    <script src="/echarts-4.0.js"></script>
+    <script src="/echarts-util.js"></script>
+
+</head>
+<body>
+<div id="dom" style="width: 600px;height: 400px"></div>
+<script>
+     $(function () {
+         getEcharts();
+     })
+    function getEcharts() {
+        var dom = document.getElementById("dom");
+       var myCharts = echarts.init(dom);
+       $.ajax({
+           url:"/getEcharts",
+           type:"post",
+           success:function (data) {
+              var option = {
+                   title: {
+                       text: 'Basic drilldown',
+                       left: 'center'
+                   },
+                   legend: {
+                       left: 'left',
+                       data: ['category']
+                   },
+                   xAxis: {
+                       type: 'category',
+                       data: data.names,
+                   },
+                   yAxis: {
+                       type: 'value'
+                   },
+                   series: [
+                       {
+                           name: 'category',
+                           type: 'bar',
+                           data: data.values,
+                       }
+                   ]
+               };
+              myCharts.setOption(option);
+              myCharts.on('click',function(object) {
+                  // 销毁之前的echarts实例
+                  echarts.dispose(dom);
+                  // 初始化一个新的实例
+                  var myCharts = echarts.init(dom);
+                  // object为当前的这个echart对象，大家可以自己打印出来看看
+                  console.dir(object);
+                  $.ajax({
+                      url:"/getEcharts",
+                      type:"post",
+                      data:{"typeName":object.name},
+                      success:function (data) {
+                          var option = {
+                              title: {
+                                  text: 'Basic drilldown',
+                                  left: 'center'
+                              },
+                              legend: {
+                                  left: 'left',
+                                  data: ['category']
+                              },
+                              xAxis: {
+                                  type: 'category',
+                                  data: data.names,
+                              },
+                              yAxis: {
+                                  type: 'value'
+                              },
+                              series: [
+                                  {
+                                      name: 'category',
+                                      type: 'bar',
+                                      data: data.values,
+                                  }
+                              ]
+                          };
+                          myCharts.setOption(option,true)
+                      },error:function () {
+                         alert("请求失败")
+                      }
+                  })
+              });
+           },
+           error:function () {
+               alert("请求失败")
+           }
+       })
+    }
+</script>
+</body>
+</html>

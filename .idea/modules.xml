@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/1810B.iml" filepath="$PROJECT_DIR$/.idea/1810B.iml" />
+      <module fileurl="file://$PROJECT_DIR$/comments/comments.iml" filepath="$PROJECT_DIR$/comments/comments.iml" />
+      <module fileurl="file://$PROJECT_DIR$/common/common.iml" filepath="$PROJECT_DIR$/common/common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/commons/commons.iml" filepath="$PROJECT_DIR$/commons/commons.iml" />
+      <module fileurl="file://$PROJECT_DIR$/config/config.iml" filepath="$PROJECT_DIR$/config/config.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eureka/eureka.iml" filepath="$PROJECT_DIR$/eureka/eureka.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rabbitmq_receive/rabbitmq_receive.iml" filepath="$PROJECT_DIR$/rabbitmq_receive/rabbitmq_receive.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rabbitmq_send/rabbitmq_send.iml" filepath="$PROJECT_DIR$/rabbitmq_send/rabbitmq_send.iml" />
+      <module fileurl="file://$PROJECT_DIR$/springboot/springboot.iml" filepath="$PROJECT_DIR$/springboot/springboot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/springboot-provider/springboot-provider.iml" filepath="$PROJECT_DIR$/springboot-provider/springboot-provider.iml" />
+      <module fileurl="file://$PROJECT_DIR$/springcloud-feign1/springcloud-feign1.iml" filepath="$PROJECT_DIR$/springcloud-feign1/springcloud-feign1.iml" />
+      <module fileurl="file://$PROJECT_DIR$/springcloud-provider/springcloud-provider.iml" filepath="$PROJECT_DIR$/springcloud-provider/springcloud-provider.iml" />
+    </modules>
+  </component>
+</project>

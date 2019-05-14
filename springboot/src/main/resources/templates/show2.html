@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.springframework.org/schema/jdbc">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- 引入easyui样式文件 -->
+    <link type="text/css" rel="stylesheet" href="/jquery-easyui-1.5/themes/default/easyui.css">
+    <!-- 引入easyui图标样式文件 -->
+    <link type="text/css" rel="stylesheet" href="/jquery-easyui-1.5/themes/icon.css">
+    <!-- 引入jquery js文件 -->
+    <script type="text/javascript" src="/jquery-easyui-1.5/jquery.min.js"></script>
+    <!-- 引入easyui的js文件 -->
+    <script type="text/javascript" src="/jquery-easyui-1.5/jquery.easyui.min.js"></script>
+    <!-- 引文easyui支持中文js -->
+    <script type="text/javascript" src="/jquery-easyui-1.5/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="/jquery-easyui-1.5/util-js.js"></script>
+</head>
+<body>
+<div class="easyui-dialog" id="comDialog" data-options="modal:true,closed:true" style="width:800px;height:500px;">
+    <div id="toolbar">
+        <table>
+            <tr>
+                <td>评论内容：</td>
+                <td><input class="easyui-textbox" id="comments"></td>
+                <td><a class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="searchCom()">搜索</a></td>
+            </tr>
+            <tr>
+                <td>评论时间：</td>
+                <td>
+                    <input class="easyui-datebox" id="startDate">至
+                    <input class="easyui-datebox" id="endDate">
+                </td>
+                <td><a class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="openSaveCom()">添加</a></td>
+            </tr>
+        </table>
+    </div>
+    <table id="comTable"></table>
+    <div class="easyui-dialog" id="saveDialog" data-options="title:'添加评论',modal:true,closed:true,
+	buttons:[{
+		text:'保存',
+		plain:true,
+		iconCls:'icon-save',
+		handler:function(){
+			saveCom();
+		}
+	},{
+		text:'关闭',
+		plain:true,
+		iconCls:'icon-cancel',
+		handler:function(){
+			closeComDialog();
+		}
+	}]"
+         style="width:400px;height:400px">
+        <div style="margin:10px 0px 0px 10px">
+            <form id="comForm" method="post">
+                <table>
+                    <tr>
+                        <td>评论内容：</td>
+                        <td>
+                            <input style="display:none" name="commentId">
+                            <input class="easyui-textbox" name="comments">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>评论人：</td>
+                        <td>
+                            <input class="easyui-textbox" name="commentsName">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>评论等级：</td>
+                        <td>
+                            <input type="radio" name="commentsLevel" value="1">好
+                            <input type="radio" name="commentsLevel" value="2">一般
+                            <input type="radio" name="commentsLevel" value="3">差
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>评论星：</td>
+                        <td>
+                            <input type="checkbox" name="commentsStars">
+                            <input type="checkbox" name="commentsStars">
+                            <input type="checkbox" name="commentsStars">
+                            <input type="checkbox" name="commentsStars">
+                            <input type="checkbox" name="commentsStars">
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+<table id="goodTable"></table>
+
+</body>
+<script th:inline="none">
+    //搜索
+    function searchCom(){
+        $("#comTable").datagrid('load',{
+            comments:$("#comments").textbox('getValue'),
+            startDate:$("#startDate").datebox('getValue'),
+            endDate:$("#endDate").datebox('getValue'),
+        })
+    }
+    //回显
+    function openUpdate(commentId){
+        $.ajax({
+            url:'/findCommentsById',
+            type:'post',
+            data:{commentId:commentId},
+            success:function(data){
+                $("#comForm").form("load",data);
+                var arr = document.getElementsByName("commentsStars");
+                for (var i = 0; i < data.commentsStars; i++) {
+                    arr[i].checked=true;
+                }
+                $("#saveDialog").dialog({
+                    title:"修改评论",
+                    closed:false
+                })
+
+            }
+        })
+    }
+    //关闭新增弹框
+    function closeComDialog(){
+        $("#saveDialog").dialog('close');
+    }
+    //新增保存
+    function saveCom(){
+        var start = $("input[name='commentsStars']:checked").length;
+        var comments = $("input[name='comments']").val();
+        var commentsName = $("input[name='commentsName']").val();
+        var commentsLevel = $("input[name='commentsLevel']:checked").val();
+        var commentId = $("input[name='commentId']").val();
+        $.ajax({
+            url:'/addComments',
+            type:"post",
+            data:{commentsStars:start,comments:comments,commentsName:commentsName,commentsLevel:commentsLevel,commentId:commentId},
+            success:function(data){
+                $("#comTable").datagrid('reload');
+                $("#saveDialog").dialog('close');
+            }
+        })
+
+    }
+    //打开新增弹框
+    function openSaveCom(){
+        $("#comForm").form('reset');
+        $("#saveDialog").dialog({
+            title:'添加评论',
+            closed:false
+        })
+    }
+    //打开评论弹框
+    function openComments(){
+        $("#comDialog").dialog({
+            title:'评论列表',
+            closed:false
+        })
+    }
+    //关闭评论弹框
+    function closeDialog(){
+        $("#comDialog").dialog('close');
+    }
+
+    $(function(){
+        initGood();//初始化商品表格
+        initComm();//初始化评论表格
+    })
+    //评论列表
+    function initComm(){
+        $("#comTable").datagrid({// 定义一下  数据表格
+            url:"/findComm",
+            title:"评论管理",
+            toolbar:'#toolbar',
+            pagination:true,
+            rownumbers:true,    //  显示序列号
+            singleSelect:true,
+            columns:[[     //  列属性     因为 他们可以合并单元格
+                {field:'chkid',checkbox:true,width:100},
+                {field:'commentsName',title:'评论人',width:100},      //  列    field   代表是 后台  传过来的值
+                {field:'comments',title:'评论内容',width:100},
+                {field:'commentsLevel',title:'评论等级',formatter:function(value,row,index){
+                        if(value==1){
+                            return "好";
+                        }else if(value==2){
+                            return "一般";
+                        }else if(value==3){
+                            return "差";
+                        }
+                    }},
+                {field:'commentsStars',title:'评论星',formatter:function(value,row,index){
+                        if(value==1){
+                            return "☆";
+                        }else if(value==2){
+                            return "☆☆";
+                        }else if(value==3){
+                            return "☆☆☆"
+                        }else if(value==4){
+                            return "☆☆☆☆"
+                        }else if(value==5){
+                            return "☆☆☆☆☆"
+                        }
+                    }},
+                {field:'456',title:'操作',formatter:function(value,row,index){
+                        return "<a href='javascript:openUpdate(\""+row.commentId+"\")' class='easyui-linkbutton'>修改</a>";
+                    }}
+
+            ]],
+
+            pageSize: 3,//每页显示的记录条数，默认为10
+            pageList: [3,5,7],//可以设置每页记录条数的列表
+        })
+    }
+    //商品列表
+    function initGood(){
+        $("#goodTable").datagrid({// 定义一下  数据表格
+            url:"/findGood",
+            title:"评论管理",
+            pagination:true,
+            rownumbers:true,    //  显示序列号
+            singleSelect:true,
+            columns:[[     //  列属性     因为 他们可以合并单元格
+                {field:'chkid',checkbox:true,width:100},
+                {field:'name',title:'商品名称',width:100},      //  列    field   代表是 后台  传过来的值
+                {field:'count',title:'评论数量',width:100},
+                {field:'imgsrc',title:'图片',formatter:function(value,row,index){
+                        return "<img width='50px' height='50px' src='"+value+"' onclick='addImg(&quot;"+row.imgsrc+"&quot)'>";
+                    }},
+                {field:'tools',title:'操作',formatter:function(value,row,index){
+                        return '<a href="javascript:openComments()">查看评价</a>';
+                    }},
+            ]],
+
+            pageSize: 3,//每页显示的记录条数，默认为10
+            pageList: [3,5,7],//可以设置每页记录条数的列表
+        })
+}
+    //oss下载图片
+    function addImg(value) {
+        alert(value)
+        location.href="/flieImgByID?imgId="+value ;
+    }
+</script>
+</html>
